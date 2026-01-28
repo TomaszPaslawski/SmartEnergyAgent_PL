@@ -47,17 +47,20 @@ Media type: application.json
 
 404	- NotFound
 
-**Sample of execution of the code:**
+**SAMPLE OF THE API RESPONSE**
 
 **Curl**
+
 curl -X 'GET' \
   'https://api.raporty.pse.pl/api/rce-pln' \
   -H 'accept: application/json'
 
 **Request URL**
+
 https://api.raporty.pse.pl/api/rce-pln
 
 **Server response**
+
 {
   "value": [
     {
@@ -1065,6 +1068,7 @@ https://api.raporty.pse.pl/api/rce-pln
 }
 
 **Response Headers**
+
  content-type: application/json; charset=utf-8 
  date: Wed,28 Jan 2026 05:14:45 GMT 
  x-azure-ref: 20260128T051445Z-15f8bd58b94hwsb7hC1FRA6pv800000020a00000000012bp 
@@ -1074,7 +1078,9 @@ https://api.raporty.pse.pl/api/rce-pln
  x-ms-middleware-request-id: 00000000-0000-0000-0000-000000000000 
 
 **Filter for seeking a day data**
+
 dtime ge '2025-10-26T00:00:00Z' and dtime lt '2025-10-27T00:00:00Z'
 
 **Useful values set**
+
 dtime,period,rce_pln,dtime_utc,business_date
