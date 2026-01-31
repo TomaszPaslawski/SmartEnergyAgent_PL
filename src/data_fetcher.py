@@ -52,3 +52,20 @@ def get_electricity_prices_pse(date_str: str) -> pd.DataFrame | None:
     except Exception as e:
         print(f"Unexpected error has occurred: {e}")
         return None
+
+
+if __name__ == "__main__":
+    # --- Sample use ---
+    test_date_str = "2025-05-15"  # Testing date
+
+    print(f"Downloading data for date: {test_date_str}")
+
+    prices_df = get_electricity_prices_pse(test_date_str)
+
+    if prices_df is not None and not prices_df.empty:
+        print(f"\nFirst 5 rows for {test_date_str}):")
+        print(prices_df.head())
+        print(f"\nColumns w DataFrame: {prices_df.columns.tolist()}")
+        print(f"Number of records: {len(prices_df)}")
+    else:
+        print("Data download was not successful or DataFrame was empty.")
