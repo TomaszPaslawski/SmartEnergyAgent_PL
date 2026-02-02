@@ -1084,3 +1084,7 @@ dtime ge '2025-10-26T00:00:00Z' and dtime lt '2025-10-27T00:00:00Z'
 **Useful values set**
 
 dtime,period,rce_pln,dtime_utc,business_date
+
+Open-Meteo documentation https://pypi.org/project/openmeteo-requests/
+
+Open-Meteo (as per 30/01/2026) is generating Python script for selected features.

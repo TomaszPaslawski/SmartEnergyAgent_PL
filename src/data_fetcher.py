@@ -56,7 +56,7 @@ def get_electricity_prices_pse(date_str: str) -> pd.DataFrame | None:
 
 if __name__ == "__main__":
     # --- Sample use ---
-    test_date_str = "2025-05-15"  # Testing date
+    test_date_str = "2026-02-01"  # Testing date
 
     print(f"Downloading data for date: {test_date_str}")
 
