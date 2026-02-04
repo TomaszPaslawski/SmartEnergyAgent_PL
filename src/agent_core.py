@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, time
 import pandas as pd
 from src.data_fetcher import get_electricity_prices_pse
 from src.weather_fetcher import get_weather_forecast
+from src.price_analyzer import analyze_price_peaks
 
 # --- Constant for the PSE publications ---
 # Publication hour for  RCE-PLN (next day prices), timezone: CET/CEST
@@ -59,6 +60,19 @@ def run_daily_agent_logic(target_date: datetime.date, latitude: float, longitude
     print(prices_df.head())
     print(f"Number of prices records: {len(prices_df)}")
 
+    price_analysis_results = analyze_price_peaks(prices_df)
+    print("\n--- Price Analysis Results ---")
+    print(f"Highest 6h prices: {price_analysis_results['highest_6h_prices']}")
+    print(f"Lowest 3h prices: {price_analysis_results['lowest_3h_prices']}")
+    print(f"High price exceeded: {price_analysis_results['high_price_exceeded']}")
+    print("Details:")
+    for detail in price_analysis_results['details']:
+        print(f"  - {detail}")
+    print("----------------------------")
+
+    # price_analysis_results = analyze_price_peaks(prices_df)
+    # print(f"\nResults of prices analysis: {price_analysis_results}")
+
     # 2. Weather Forecast download
     weather_df = get_weather_forecast(latitude, longitude, target_date.strftime('%Y-%m-%d'))
     if weather_df is None or weather_df.empty:
@@ -80,6 +94,11 @@ if __name__ == "__main__":
     DEFAULT_LONGITUDE = 17.7752
 
     # Weather Forecast for tomorrow
-    tomorrow_date = datetime.now().date() + timedelta(days=1)
+
+    # Turn on after 14.00 testing
+    # tomorrow_date = datetime.now().date() + timedelta(days=1)
+
+    # Turn on before 14.00 testing
+    tomorrow_date = datetime.now().date()
 
     run_daily_agent_logic(tomorrow_date, DEFAULT_LATITUDE, DEFAULT_LONGITUDE)

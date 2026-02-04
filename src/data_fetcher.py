@@ -7,12 +7,13 @@ PSE_API_BASE_URL = os.getenv("PSE_API_BASE_URL", "https://api.raporty.pse.pl/api
 
 def get_electricity_prices_pse(date_str: str) -> pd.DataFrame | None:
     try:
-        target_date = datetime.strptime(date_str, '%Y-%m-%d')
+        target_date = datetime.today().strptime(date_str, '%Y-%m-%d') - timedelta(days=1)
         end_date = target_date + timedelta(days=1)
 
         date_from_formatted = target_date.isoformat(timespec='seconds')
         date_to_formatted = end_date.isoformat(timespec='seconds')
-
+        print(date_from_formatted)
+        print(date_to_formatted)
         filter_param = (
             f"dtime ge '{date_from_formatted}' and dtime lt '{date_to_formatted}'"
         )
@@ -56,7 +57,7 @@ def get_electricity_prices_pse(date_str: str) -> pd.DataFrame | None:
 
 if __name__ == "__main__":
     # --- Sample use ---
-    test_date_str = "2026-02-01"  # Testing date
+    test_date_str = "2026-02-03"  # Testing date
 
     print(f"Downloading data for date: {test_date_str}")
 
