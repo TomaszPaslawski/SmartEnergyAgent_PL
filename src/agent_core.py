@@ -96,9 +96,9 @@ if __name__ == "__main__":
     # Weather Forecast for tomorrow
 
     # Turn on after 14.00 testing
-    # tomorrow_date = datetime.now().date() + timedelta(days=1)
+    tomorrow_date = datetime.now().date() + timedelta(days=1)
 
     # Turn on before 14.00 testing
-    tomorrow_date = datetime.now().date()
+    # tomorrow_date = datetime.now().date()
 
     run_daily_agent_logic(tomorrow_date, DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
