@@ -3,6 +3,7 @@ from src.data_fetcher import get_electricity_prices_pse
 from src.weather_fetcher import get_weather_forecast
 from src.price_analyzer import analyze_price_peaks
 from src.weather_analyzer import analyze_weather_for_recharge
+from src.recommendation_engine import generate_recommendations
 
 # --- Constant for the PSE publications ---
 # Publication hour for  RCE-PLN (next day prices), timezone: CET/CEST
@@ -92,6 +93,14 @@ def run_daily_agent_logic(target_date: datetime.date, latitude: float, longitude
         print(f"{detail}")
     print("------------------------------")
 
+    # --- NOWA SEKCJA: 3. Generating Recommendations ---
+    # This calls the function from recommendation_engine.py
+    final_recommendation = generate_recommendations(price_analysis_results, weather_analysis_results, target_date)
+    print("\n--- Agent's Recommendation ---")
+    print(final_recommendation)
+    print("----------------------------")
+    # --- END NEW SECTION ---
+
     # --- Further logic will be added here ---
 
     print(f"[{datetime.now()}] Agent job done for date: {target_date}")
@@ -105,9 +114,9 @@ if __name__ == "__main__":
     # Weather Forecast for tomorrow
 
     # Turn on after 14.00 testing
-    # tomorrow_date = datetime.now().date() + timedelta(days=1)
+    tomorrow_date = datetime.now().date() + timedelta(days=1)
 
     # Turn on before 14.00 testing
-    tomorrow_date = datetime.now().date()
+    # tomorrow_date = datetime.now().date()
 
     run_daily_agent_logic(tomorrow_date, DEFAULT_LATITUDE, DEFAULT_LONGITUDE)

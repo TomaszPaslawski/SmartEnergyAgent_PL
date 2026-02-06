@@ -94,18 +94,18 @@ def analyze_weather_for_recharge(weather_df: pd.DataFrame) -> dict:
     if results["total_sunny_hours_in_range"] > 0:
         favorable_hours_percentage = results["favorable_hours_count"] / results["total_sunny_hours_in_range"]
         results["details"].append(
-            f"Zidentyfikowano {results['favorable_hours_count']} z {results['total_sunny_hours_in_range']} godzin ({favorable_hours_percentage:.0%}) z pogodą sprzyjającą ładowaniu PV w zakresie {SUNNY_HOURS_START}-{SUNNY_HOURS_END}.")
+            f"{results['favorable_hours_count']} from {results['total_sunny_hours_in_range']} hours ({favorable_hours_percentage:.0%}) with weather supporting loading from PV {SUNNY_HOURS_START}-{SUNNY_HOURS_END}.")
         results["details"].extend(favorable_hours_details)
 
         if favorable_hours_percentage >= MIN_FAVORABLE_HOURS_PERCENTAGE:
             results["recharge_favorable"] = True
             results["details"].append(
-                f"Ogólna pogoda sprzyja ładowaniu! {favorable_hours_percentage:.0%} godzin ma korzystne warunki (wymagane {MIN_FAVORABLE_HOURS_PERCENTAGE:.0%}).")
+                f"Weather IS supporting charging! {favorable_hours_percentage:.0%} hours have minimum conditions for charging (required {MIN_FAVORABLE_HOURS_PERCENTAGE:.0%}).")
         else:
             results["details"].append(
-                f"Ogólna pogoda NIE sprzyja ładowaniu. Tylko {favorable_hours_percentage:.0%} godzin ma korzystne warunki (wymagane {MIN_FAVORABLE_HOURS_PERCENTAGE:.0%}).")
+                f"Weather IS NOT favorable for loading. {favorable_hours_percentage:.0%} hours have minimum conditions for charging  (required {MIN_FAVORABLE_HOURS_PERCENTAGE:.0%}).")
     else:
-        results["details"].append("Brak godzin do oceny potencjału ładowania w zdefiniowanym zakresie.")
+        results["details"].append("No hours for PV loading validation within the period.")
 
     # --- Weather status for whole day ---
     results["details"].append("\n--- Hourly Weather Status for the Day ---")
@@ -117,7 +117,7 @@ def analyze_weather_for_recharge(weather_df: pd.DataFrame) -> dict:
         weather_code = row['weather_code']
         cloud_cover = row['cloud_cover']
 
-        status_text = "Nieokreślono"
+        status_text = "Not specified"
         if weather_code in PV_FAVORABLE_WEATHER_CODES and cloud_cover <= MAX_CLOUD_COVER_FOR_PV_RECHARGE:
             status_text = "PV Favorable"
         elif weather_code in [0, 1, 2]:
