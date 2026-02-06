@@ -1,9 +1,8 @@
-
 from datetime import datetime, timedelta, time
-import pandas as pd
 from src.data_fetcher import get_electricity_prices_pse
 from src.weather_fetcher import get_weather_forecast
 from src.price_analyzer import analyze_price_peaks
+from src.weather_analyzer import analyze_weather_for_recharge
 
 # --- Constant for the PSE publications ---
 # Publication hour for  RCE-PLN (next day prices), timezone: CET/CEST
@@ -83,6 +82,16 @@ def run_daily_agent_logic(target_date: datetime.date, latitude: float, longitude
     print(weather_df.head())
     print(f"Number of weather records: {len(weather_df)}")
 
+    weather_analysis_results = analyze_weather_for_recharge(weather_df)
+    print("\n--- Weather Analysis Results ---")
+    print(f"Recharge favorable: {weather_analysis_results['recharge_favorable']}")
+    print(
+        f"Favorable hours count (10-16): {weather_analysis_results['favorable_hours_count']} out of {weather_analysis_results['total_sunny_hours_in_range']}")
+    print("Details:")
+    for detail in weather_analysis_results['details']:
+        print(f"{detail}")
+    print("------------------------------")
+
     # --- Further logic will be added here ---
 
     print(f"[{datetime.now()}] Agent job done for date: {target_date}")
@@ -96,9 +105,9 @@ if __name__ == "__main__":
     # Weather Forecast for tomorrow
 
     # Turn on after 14.00 testing
-    tomorrow_date = datetime.now().date() + timedelta(days=1)
+    # tomorrow_date = datetime.now().date() + timedelta(days=1)
 
     # Turn on before 14.00 testing
-    # tomorrow_date = datetime.now().date()
+    tomorrow_date = datetime.now().date()
 
     run_daily_agent_logic(tomorrow_date, DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
