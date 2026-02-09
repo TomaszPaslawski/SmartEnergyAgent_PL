@@ -128,7 +128,7 @@ def generate_recommendations(price_analysis_results: dict, weather_analysis_resu
     if morning_peak_hour_info:
         discharge_start_hour_str = morning_peak_hour_info['hour']
         recommendation_messages.append(
-            f"5. To avoid the highest prices during the morning peak, it is recommended to start discharging the battery at {discharge_start_hour_str} (start of the peak hour).")
+            f"5. It is recommended to start discharging the battery at {discharge_start_hour_str} (start of the peak hour), if needed.")
     else:
         recommendation_messages.append(
             "5. No precise data for the morning peak. No specific recommendation for morning battery discharge.")
@@ -157,5 +157,18 @@ def generate_recommendations(price_analysis_results: dict, weather_analysis_resu
         recommendation_messages.append(
             "6. No precise data for the evening peak. No specific recommendation for selling surplus.")
     recommendation_messages.append("")
+
+    recommendation_messages.append(f"------------------------------------")
+    recommendation_messages.append("\n<b>--- Hourly Price Status (PLN/MWh) ---</b>")
+    for entry in price_analysis_results['hourly_status']:
+        recommendation_messages.append(f"  - <b>{entry['hour']}</b>: {entry['price']:.2f} ({entry['status']})")
+    recommendation_messages.append("---------------------------------------------------\n")
+
+    recommendation_messages.append("<b>--- Hourly Weather Forecast ---</b>")
+    for entry in weather_analysis_results['hourly_weather_status']:
+        recommendation_messages.append(
+            f"  - <b>{entry['hour']}</b>: {entry['status']} (Code: {int(entry['weather_code'])}, Clouds: {entry['cloud_cover']:.0f}%)")
+    recommendation_messages.append("-------------------------------------------\n")
+
 
     return "\n".join(recommendation_messages)
