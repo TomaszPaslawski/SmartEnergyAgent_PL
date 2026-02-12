@@ -16,7 +16,7 @@ PSE_PUBLICATION_MINUTE_CET = 0
 
 def run_daily_agent_logic(latitude: float, longitude: float):
     """
-    Main logic of the Agent. It runs everyday for tomorrow.
+    Main logic of the Agent. It runs every day for tomorrow.
     Args:
         latitude (float): Latitude for Weather Forecast.
         longitude (float): Longitude for Weather Forecast.
@@ -106,7 +106,7 @@ def run_daily_agent_logic(latitude: float, longitude: float):
     print("----------------------------")
 
     print("\n--- Sending Telegram Notification ---")
-    success = send_telegram_message(final_recommendation)  # <--- WYWOŁANIE BOTA
+    success = send_telegram_message(final_recommendation)  # <--- BOT CALLING
     if success:
         print("Telegram message sent successfully!")
     else:
@@ -119,7 +119,8 @@ def run_daily_agent_logic(latitude: float, longitude: float):
 
 
 if __name__ == "__main__":
-    # --- Parameters for testing ---
+    # --- Parameters for my location, to be calculated based
+    # on user input in the future---
     DEFAULT_LATITUDE = 53.7535
     DEFAULT_LONGITUDE = 17.7752
 
