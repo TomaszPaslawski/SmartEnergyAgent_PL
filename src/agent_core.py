@@ -1,10 +1,12 @@
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 from src.data_fetcher import get_electricity_prices_pse
 from src.weather_fetcher import get_weather_forecast
 from src.price_analyzer import analyze_price_peaks
 from src.weather_analyzer import analyze_weather_for_recharge
 from src.recommendation_engine import generate_recommendations
 from src.notification_manager import send_telegram_message
+from apscheduler.schedulers.background import BackgroundScheduler
+import time as time_sleep
 
 # --- Constant for the PSE publications ---
 # Publication hour for  RCE-PLN (next day prices), timezone: CET/CEST
@@ -12,14 +14,16 @@ from src.notification_manager import send_telegram_message
 PSE_PUBLICATION_HOUR_CET = 14
 PSE_PUBLICATION_MINUTE_CET = 0
 
-def run_daily_agent_logic(target_date: datetime.date, latitude: float, longitude: float):
+def run_daily_agent_logic(latitude: float, longitude: float):
     """
     Main logic of the Agent. It runs everyday for tomorrow.
     Args:
-        target_date (datetime.date): Data for which we want to run the agent.
         latitude (float): Latitude for Weather Forecast.
         longitude (float): Longitude for Weather Forecast.
     """
+    current_actual_date = datetime.now().date()
+    target_date = current_actual_date + timedelta(days=1)
+
     current_time = datetime.now()
     print(f"[{current_time}] Agent is going to be run for: {target_date}")
 
@@ -115,16 +119,30 @@ def run_daily_agent_logic(target_date: datetime.date, latitude: float, longitude
 
 
 if __name__ == "__main__":
-    # --- Test parameters ---
+    # --- Parameters for testing ---
     DEFAULT_LATITUDE = 53.7535
     DEFAULT_LONGITUDE = 17.7752
 
-    # Weather Forecast for tomorrow
+    # Object scheduler
+    scheduler = BackgroundScheduler()
 
-    # Turn on after 14.00 testing
-    # tomorrow_date = datetime.now().date() + timedelta(days=1)
+    scheduler.add_job(
+        run_daily_agent_logic,
+        'cron',
+        hour=14,
+        minute=00,
+        args=[DEFAULT_LATITUDE, DEFAULT_LONGITUDE]
+    )
 
-    # Turn on before 14.00 testing
-    tomorrow_date = datetime.now().date()
+    print(f"[{datetime.now()}] Starting scheduler. Agent will run daily at 14:00 CET/CEST.")
+    print("Press Ctrl+C to exit.")
+    scheduler.start()
 
-    run_daily_agent_logic(tomorrow_date, DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+    try:
+        # Infinity loop which allow scheduler to be run
+        while True:
+            time_sleep.sleep(1)
+    except (KeyboardInterrupt, SystemExit):
+        # Stop scheduler after Ctrl+C
+        scheduler.shutdown()
+        print(f"[{datetime.now()}] Scheduler stopped.")
