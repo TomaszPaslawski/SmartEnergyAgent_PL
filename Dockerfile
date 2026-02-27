@@ -10,6 +10,8 @@ COPY pyproject.toml poetry.lock ./
 # Install Poetry package manager
 RUN pip install --no-cache-dir poetry
 
+RUN poetry cache clear pypi --all || true
+
 # Install project dependencies (production only, no dev packages)
 RUN poetry config virtualenvs.create false \
     && poetry install --only main --no-interaction --no-ansi
@@ -18,7 +20,6 @@ RUN poetry config virtualenvs.create false \
 COPY . .
 
 # Environment variables for Telegram credentials
-# These will be set in Railway secrets (not hardcoded here)
 ENV TELEGRAM_BOT_TOKEN=""
 ENV TELEGRAM_CHAT_ID=""
 
