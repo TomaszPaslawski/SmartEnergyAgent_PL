@@ -12,13 +12,13 @@ RUN pip install --no-cache-dir poetry
 
 # Install project dependencies (production only, no dev packages)
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-dev --no-interaction --no-ansi
+    && poetry install --only main --no-interaction --no-ansi
 
 # Copy entire project into container
 COPY . .
 
 # Environment variables for Telegram credentials
-# These will be set in Fly.io secrets (not hardcoded here)
+# These will be set in Railway secrets (not hardcoded here)
 ENV TELEGRAM_BOT_TOKEN=""
 ENV TELEGRAM_CHAT_ID=""
 
