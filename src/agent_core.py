@@ -119,13 +119,14 @@ def run_daily_agent_logic(latitude: float, longitude: float):
 
 
 if __name__ == "__main__":
-    # --- Parameters for my location, to be calculated based
-    # on user input in the future---
+    import pytz
+
     DEFAULT_LATITUDE = 53.7535
     DEFAULT_LONGITUDE = 17.7752
 
-    # Object scheduler
-    scheduler = BackgroundScheduler()
+    poland_tz = pytz.timezone('Europe/Warsaw')
+
+    scheduler = BackgroundScheduler(timezone=poland_tz)
 
     scheduler.add_job(
         run_daily_agent_logic,
@@ -135,7 +136,7 @@ if __name__ == "__main__":
         args=[DEFAULT_LATITUDE, DEFAULT_LONGITUDE]
     )
 
-    print(f"[{datetime.now()}] Starting scheduler. Agent will run daily at 14:00 CET/CEST.")
+    print(f"[{datetime.now(poland_tz)}] Starting scheduler. Agent will run daily at 14:00 CET/CEST.")
     print("Press Ctrl+C to exit.")
     scheduler.start()
 
