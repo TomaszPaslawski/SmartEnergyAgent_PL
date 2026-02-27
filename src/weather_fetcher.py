@@ -92,8 +92,7 @@ def get_weather_forecast(latitude: float, longitude: float, target_date_str: str
         hourly_precipitation = hourly.Variables(7).ValuesAsNumpy()
         hourly_weather_code = hourly.Variables(8).ValuesAsNumpy()
 
-        # --- KLUCZOWA ZMIANA: Zmieniamy "date" na "datetime" dla kolumny czasowej ---
-        hourly_data = {"datetime": pd.date_range(  # <--- Zmieniono "date" na "datetime"
+        hourly_data = {"datetime": pd.date_range(
             start=pd.to_datetime(hourly.Time() + response.UtcOffsetSeconds(), unit="s", utc=True),
             end=pd.to_datetime(hourly.TimeEnd() + response.UtcOffsetSeconds(), unit="s", utc=True),
             freq=pd.Timedelta(seconds=hourly.Interval()),
@@ -111,10 +110,6 @@ def get_weather_forecast(latitude: float, longitude: float, target_date_str: str
         hourly_data["weather_code"] = hourly_weather_code
 
         hourly_dataframe = pd.DataFrame(data=hourly_data)
-
-        if not responses:
-            print("ERROR: Open-Meteo API returned empty list or there is not data.")
-            return None
 
         return hourly_dataframe
 
