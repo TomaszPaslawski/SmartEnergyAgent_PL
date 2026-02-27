@@ -6,7 +6,7 @@ authors = [
     {name = "Tomasz",email = "xxx@gmail.com"}
 ]
 license = {text = "MIT"}
-readme = "README.md"
+readme = {file = "README.md"}
 requires-python = "^3.12"
 dependencies = [
     "requests (>=2.32.5,<3.0.0)",
