@@ -7,6 +7,7 @@ from src.recommendation_engine import generate_recommendations
 from src.notification_manager import send_telegram_message
 from apscheduler.schedulers.background import BackgroundScheduler
 import time as time_sleep
+import pytz
 
 # --- Constant for the PSE publications ---
 # Publication hour for  RCE-PLN (next day prices), timezone: CET/CEST
@@ -21,10 +22,12 @@ def run_daily_agent_logic(latitude: float, longitude: float):
         latitude (float): Latitude for Weather Forecast.
         longitude (float): Longitude for Weather Forecast.
     """
-    current_actual_date = datetime.now().date()
+    poland_tz = pytz.timezone('Europe/Warsaw')
+
+    current_actual_date = datetime.now(poland_tz).date()
     target_date = current_actual_date + timedelta(days=1)
 
-    current_time = datetime.now()
+    current_time = datetime.now(poland_tz)
     print(f"[{current_time}] Agent is going to be run for: {target_date}")
 
     # --- SECURITY CHECK: Verification of the publication hour for RCE-PLN ---
@@ -119,7 +122,6 @@ def run_daily_agent_logic(latitude: float, longitude: float):
 
 
 if __name__ == "__main__":
-    import pytz
 
     DEFAULT_LATITUDE = 53.7535
     DEFAULT_LONGITUDE = 17.7752
@@ -132,7 +134,7 @@ if __name__ == "__main__":
         run_daily_agent_logic,
         'cron',
         hour=14,
-        minute=15,
+        minute=30,
         args=[DEFAULT_LATITUDE, DEFAULT_LONGITUDE]
     )
 
