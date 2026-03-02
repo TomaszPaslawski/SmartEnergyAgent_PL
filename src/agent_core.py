@@ -134,7 +134,7 @@ if __name__ == "__main__":
         run_daily_agent_logic,
         'cron',
         hour=14,
-        minute=30,
+        minute=00,
         args=[DEFAULT_LATITUDE, DEFAULT_LONGITUDE]
     )
 
