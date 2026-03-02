@@ -18,5 +18,7 @@ RUN poetry config virtualenvs.create false \
 ENV TELEGRAM_BOT_TOKEN=""
 ENV TELEGRAM_CHAT_ID=""
 
+ENV PYTHONUNBUFFERED=1
+
 # Run the agent (scheduler starts automatically)
 CMD ["python", "src/agent_core.py"]
