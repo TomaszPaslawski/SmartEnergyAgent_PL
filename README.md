@@ -1,6 +1,9 @@
 # SmartEnergyAgent_PL
-GitHub Workflow Status (placeholder)
+![Tests](https://github.com/TomaszPaslawski/SmartEnergyAgent_PL/workflows/Tests/badge.svg)
+![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
+
 Python 3.12
+
 License: MIT
 1. Project Overview
 
@@ -137,8 +140,7 @@ This project is developed with MLOps and DataOps principles from the outset:
     Phase 4: Notification System: Implement Telegram bot integration.
     Phase 5: Orchestration & Deployment: Use APScheduler for automation, explore Docker for deployment.
 ```
-
-10. License
+9. License
 
 This project is licensed under the MIT License. See the LICENSE file for more details.
 
