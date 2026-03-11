@@ -10,7 +10,8 @@ COPY . .
 # Install Poetry package manager
 RUN pip install --no-cache-dir poetry
 
-# Install project dependencies (production only, no dev packages)
+# Clear pip cache and install fresh dependencies
+RUN pip cache purge || true
 RUN poetry config virtualenvs.create false \
     && poetry install --only main --no-interaction --no-ansi
 
@@ -18,6 +19,7 @@ RUN poetry config virtualenvs.create false \
 ENV TELEGRAM_BOT_TOKEN=""
 ENV TELEGRAM_CHAT_ID=""
 
+# Disable Python output buffering
 ENV PYTHONUNBUFFERED=1
 
 # Run the agent (scheduler starts automatically)
