@@ -1,0 +1,1 @@
+worker: python src/agent_core.py
