@@ -1,26 +1,22 @@
 # Base Python image
 FROM python:3.12-slim
 
-# Set working directory inside container
+# Set working directory
 WORKDIR /app
 
-# Copy ENTIRE project first (including src/)
+# Copy requirements first (for caching)
+COPY requirements.txt .
+
+# Install dependencies with pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy entire project
 COPY . .
 
-# Install Poetry package manager
-RUN pip install --no-cache-dir poetry
-
-# Clear pip cache and install fresh dependencies
-RUN pip cache purge || true
-RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction --no-ansi
-
-# Environment variables for Telegram credentials
+# Environment variables
 ENV TELEGRAM_BOT_TOKEN=""
 ENV TELEGRAM_CHAT_ID=""
-
-# Disable Python output buffering
 ENV PYTHONUNBUFFERED=1
 
-# Run the agent (scheduler starts automatically)
+# Run the agent
 CMD ["python", "src/agent_core.py"]
