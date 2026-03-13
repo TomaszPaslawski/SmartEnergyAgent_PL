@@ -17,6 +17,7 @@ COPY . .
 ENV TELEGRAM_BOT_TOKEN=""
 ENV TELEGRAM_CHAT_ID=""
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
 
 # Run the agent
 CMD ["python", "src/agent_core.py"]
