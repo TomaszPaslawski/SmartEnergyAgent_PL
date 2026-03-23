@@ -11,7 +11,7 @@ from src.database import (
 
 @pytest.fixture
 def in_memory_db(tmp_path):
-    """Fixture – tworzy tymczasową bazę danych dla każdego testu."""
+    """Fixture – creates temporary database for each test."""
     test_db = tmp_path / "test.db"
 
     with patch('src.database.DB_PATH', test_db):
@@ -20,13 +20,13 @@ def in_memory_db(tmp_path):
 
 
 def test_create_tables(in_memory_db):
-    """Test tworzenia tabel."""
-    # Tabele powinny być utworzone bez błędu
+    """Test - tables creation."""
+    # Tables created without errors
     assert in_memory_db.exists()
 
 
 def test_save_location(in_memory_db):
-    """Test zapisywania lokalizacji."""
+    """Test - saving location."""
     with patch('src.database.DB_PATH', in_memory_db):
         result = save_location("user_123", 52.23, 21.01, "Warszawa")
 
@@ -34,7 +34,7 @@ def test_save_location(in_memory_db):
 
 
 def test_get_location(in_memory_db):
-    """Test pobierania lokalizacji."""
+    """Test - reading location."""
     with patch('src.database.DB_PATH', in_memory_db):
         save_location("user_123", 52.23, 21.01, "Warszawa")
 
@@ -48,7 +48,7 @@ def test_get_location(in_memory_db):
 
 
 def test_get_location_not_found(in_memory_db):
-    """Test pobierania lokalizacji – użytkownik nie istnieje."""
+    """Test - reading location, user does not exist."""
     with patch('src.database.DB_PATH', in_memory_db):
         location = get_location("nonexistent_user")
 
@@ -56,15 +56,15 @@ def test_get_location_not_found(in_memory_db):
 
 
 def test_save_location_update(in_memory_db):
-    """Test aktualizacji lokalizacji (ten sam user_id)."""
+    """Test - updating location (same user_id)."""
     with patch('src.database.DB_PATH', in_memory_db):
-        # Zapisz Warszawa
+        # Save Warszawa
         save_location("user_123", 52.23, 21.01, "Warszawa")
 
-        # Update na Gdańsk
+        # Update to Gdańsk
         save_location("user_123", 54.35, 18.65, "Gdańsk")
 
-        # Sprawdź czy zaktualizowano
+        # Check if updated
         location = get_location("user_123")
 
     assert location is not None
@@ -74,7 +74,7 @@ def test_save_location_update(in_memory_db):
 
 
 def test_get_all_users(in_memory_db):
-    """Test pobierania wszystkich użytkowników."""
+    """Test - reading all users."""
     with patch('src.database.DB_PATH', in_memory_db):
         save_location("user_123", 52.23, 21.01, "Warszawa")
         save_location("user_456", 50.06, 19.94, "Kraków")
@@ -85,21 +85,21 @@ def test_get_all_users(in_memory_db):
 
 
 def test_delete_location(in_memory_db):
-    """Test usuwania lokalizacji."""
+    """Test - location removal."""
     with patch('src.database.DB_PATH', in_memory_db):
         save_location("user_123", 52.23, 21.01, "Warszawa")
 
-        # Usuń
+        # Delete
         result = delete_location("user_123")
         assert result == True
 
-        # Sprawdź czy usunięto
+        # Check if removed
         location = get_location("user_123")
         assert location is None
 
 
 def test_save_location_error():
-    """Test zapisu z błędem bazy danych."""
+    """Test - saving with errors."""
     with patch('src.database.get_db_connection') as mock_conn:
         mock_conn.side_effect = Exception("DB error")
 
@@ -109,7 +109,7 @@ def test_save_location_error():
 
 
 def test_get_location_error():
-    """Test pobierania z błędem bazy danych."""
+    """Test - reading with error."""
     with patch('src.database.get_db_connection') as mock_conn:
         mock_conn.side_effect = Exception("DB error")
 
@@ -119,7 +119,7 @@ def test_get_location_error():
 
 
 def test_get_all_users_error():
-    """Test pobierania wszystkich z błędem bazy danych."""
+    """Test - reading all users with error."""
     with patch('src.database.get_db_connection') as mock_conn:
         mock_conn.side_effect = Exception("DB error")
 
@@ -129,7 +129,7 @@ def test_get_all_users_error():
 
 
 def test_delete_location_error():
-    """Test usuwania z błędem bazy danych."""
+    """Test - removal with error."""
     with patch('src.database.get_db_connection') as mock_conn:
         mock_conn.side_effect = Exception("DB error")
 
