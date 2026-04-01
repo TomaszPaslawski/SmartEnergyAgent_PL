@@ -154,6 +154,9 @@ def run_for_all_users():
 
 
 if __name__ == "__main__":
+    import asyncio
+    from src.database import create_tables
+    from src.telegram_bot_handlers import create_bot_application
 
     poland_tz = pytz.timezone('Europe/Warsaw')
 
@@ -171,13 +174,9 @@ if __name__ == "__main__":
     )
 
     print(f"[{datetime.now(poland_tz)}] Starting scheduler. Agent will run daily at 14:00 CET/CEST.")
-    print(f"[{datetime.now(poland_tz)}] Telegram bot handlers active.")
-    print("Press Ctrl+C to exit.")
     scheduler.start()
 
-    try:
-        while True:
-            time_sleep.sleep(1)
-    except (KeyboardInterrupt, SystemExit):
-        scheduler.shutdown()
-        print(f"[{datetime.now(poland_tz)}] Scheduler stopped.")
+    # Telegram bot (runs forever, listens for commands)
+    print(f"[{datetime.now(poland_tz)}] Starting Telegram bot...")
+    app = create_bot_application()
+    app.run_polling(drop_pending_updates=True)

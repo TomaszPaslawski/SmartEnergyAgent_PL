@@ -12,6 +12,13 @@ from telegram.ext import (
 )
 from src.location_service import geocode_city, validate_coordinates
 from src.database import create_tables, save_location, get_location
+from src.data_fetcher import get_electricity_prices_pse
+from src.weather_fetcher import get_weather_forecast
+from src.price_analyzer import analyze_price_peaks
+from src.weather_analyzer import analyze_weather_for_recharge
+from src.recommendation_engine import generate_recommendations
+from datetime import datetime, timedelta
+import pytz
 
 load_dotenv()
 
@@ -155,6 +162,74 @@ async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 
+async def recommend_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Handler for /recommend command.
+    Generates and sends recommendations on demand.
+    """
+    user_id = str(update.effective_user.id)
+    poland_tz = pytz.timezone('Europe/Warsaw')
+
+    # Check if user has location
+    location = get_location(user_id)
+
+    if not location:
+        await update.message.reply_text(
+            "You don't have a location set.\n\n"
+            "Use /start or /set_location first."
+        )
+        return
+
+    latitude, longitude, city_name = location
+
+    # Calculate target date (tomorrow)
+    current_time = datetime.now(poland_tz)
+    target_date = (current_time + timedelta(days=1)).date()
+
+    await update.message.reply_text(
+        f"Generating recommendations for <b>{city_name}</b>...\n"
+        f"Date: {target_date.strftime('%Y-%m-%d')}",
+        parse_mode='HTML'
+    )
+
+    try:
+        # 1. Fetch electricity prices
+        prices_df = get_electricity_prices_pse(target_date.strftime('%Y-%m-%d'))
+        if prices_df is None or prices_df.empty:
+            await update.message.reply_text(
+                "PSE price data is not available yet.\n"
+                "Try again later (PSE publishes data between 13:00-14:00 CET)."
+            )
+            return
+
+        # 2. Analyze prices
+        price_analysis = analyze_price_peaks(prices_df)
+
+        # 3. Fetch weather
+        weather_df = get_weather_forecast(latitude, longitude, target_date.strftime('%Y-%m-%d'))
+        if weather_df is None or weather_df.empty:
+            await update.message.reply_text(
+                "Weather forecast is not available.\n"
+                "Try again later."
+            )
+            return
+
+        # 4. Analyze weather
+        weather_analysis = analyze_weather_for_recharge(weather_df)
+
+        # 5. Generate recommendations
+        recommendation = generate_recommendations(price_analysis, weather_analysis, target_date)
+
+        # 6. Send recommendation
+        await update.message.reply_text(recommendation, parse_mode='HTML')
+
+    except Exception as e:
+        logger.error(f"Error generating recommendations for user {user_id}: {e}")
+        await update.message.reply_text(
+            "An error occurred while generating recommendations.\n"
+            "Please try again later."
+        )
+
 def create_bot_application() -> Application:
     """
     Creates and configures Telegram Bot Application.
@@ -190,6 +265,7 @@ def create_bot_application() -> Application:
     # Handlers registration
     application.add_handler(conv_handler)
     application.add_handler(CommandHandler("status", status_command))
+    application.add_handler(CommandHandler("recommend", recommend_command))
 
     # Creates tables in database
     create_tables()
