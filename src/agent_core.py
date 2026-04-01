@@ -4,6 +4,7 @@ from src.weather_fetcher import get_weather_forecast
 from src.price_analyzer import analyze_price_peaks
 from src.weather_analyzer import analyze_weather_for_recharge
 from src.recommendation_engine import generate_recommendations
+from src.database import get_all_users, create_tables
 from src.notification_manager import send_telegram_message
 from apscheduler.schedulers.background import BackgroundScheduler
 import time as time_sleep
@@ -121,32 +122,62 @@ def run_daily_agent_logic(latitude: float, longitude: float):
     print(f"[{datetime.now()}] Agent job done for date: {target_date}")
 
 
-if __name__ == "__main__":
+def run_for_all_users():
+    """
+    Runs agent logic for ALL users from the database.
+    If no users in database, uses default location.
+    """
+    poland_tz = pytz.timezone('Europe/Warsaw')
 
+    # Default location (fallback)
     DEFAULT_LATITUDE = 53.7535
     DEFAULT_LONGITUDE = 17.7752
 
+    users = get_all_users()
+
+    if not users:
+        print(f"[{datetime.now(poland_tz)}] No users in database. Using default location.")
+        run_daily_agent_logic(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+        return
+
+    print(f"[{datetime.now(poland_tz)}] Running agent for {len(users)} user(s)...")
+
+    for user_id, latitude, longitude, city_name in users:
+        print(f"\n--- Processing user {user_id}: {city_name} ({latitude:.2f}, {longitude:.2f}) ---")
+        try:
+            run_daily_agent_logic(latitude, longitude)
+        except Exception as e:
+            print(f"Error processing user {user_id}: {e}")
+            continue
+
+    print(f"\n[{datetime.now(poland_tz)}] All users processed.")
+
+
+if __name__ == "__main__":
+
     poland_tz = pytz.timezone('Europe/Warsaw')
 
+    # Create database tables
+    create_tables()
+
+    # Scheduler
     scheduler = BackgroundScheduler(timezone=poland_tz)
 
     scheduler.add_job(
-        run_daily_agent_logic,
+        run_for_all_users,
         'cron',
         hour=14,
-        minute=00,
-        args=[DEFAULT_LATITUDE, DEFAULT_LONGITUDE]
+        minute=0,
     )
 
     print(f"[{datetime.now(poland_tz)}] Starting scheduler. Agent will run daily at 14:00 CET/CEST.")
+    print(f"[{datetime.now(poland_tz)}] Telegram bot handlers active.")
     print("Press Ctrl+C to exit.")
     scheduler.start()
 
     try:
-        # Infinity loop which allow scheduler to be run
         while True:
             time_sleep.sleep(1)
     except (KeyboardInterrupt, SystemExit):
-        # Stop scheduler after Ctrl+C
         scheduler.shutdown()
-        print(f"[{datetime.now()}] Scheduler stopped.")
+        print(f"[{datetime.now(poland_tz)}] Scheduler stopped.")
